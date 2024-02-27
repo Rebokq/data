@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cryptocurrency Prices</title>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Cryptocurrency</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>NEAR</td>
+        <td>$2.89</td>
+      </tr>
+      <tr>
+        <td>APT</td>
+        <td>$8.35</td>
+      </tr>
+      <tr>
+        <td>TIA</td>
+        <td>$17.60</td>
+      </tr>
+      <tr>
+        <td>XMR</td>
+        <td>$151.10</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    // Connect to Kafka and fetch data
+    const kafkaClient = new KafkaClient();
+    const consumer = kafkaClient.subscribe('crypto');
+
+    // Continuously poll for new messages
+    consumer.on('message', (message) => {
+      // Parse cryptocurrency data from JSON message
+      const cryptoData = JSON.parse(message.value);
+      const cryptoName = cryptoData.crypto_name;
+      const cryptoPrice = cryptoData.price;
+
+      // Update HTML table with new data
+      const cryptocurrencyRow = document.createElement('tr');
+      const cryptocurrencyNameCell = document.createElement('td');
+      cryptocurrencyNameCell.textContent = cryptoName;
+      const cryptocurrencyPriceCell = document.createElement('td');
+      cryptocurrencyPriceCell.textContent = cryptoPrice;
+
+      cryptocurrencyRow.appendChild(cryptocurrencyNameCell);
+      cryptocurrencyRow.appendChild(cryptocurrencyPriceCell);
+
+      const cryptocurrencyTableBody = document.querySelector('tbody');
+      cryptocurrencyTableBody.appendChild(cryptocurrencyRow);
+    });
+  </script>
+</body>
+</html>

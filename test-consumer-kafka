@@ -1,0 +1,27 @@
+from kafka.consumer import KafkaConsumer
+import json  # Ajoutez cette ligne pour importer le module json
+
+# Configuration du consommateur Kafka
+bootstrap_servers = 'localhost:9092'  # Assurez-vous de mettre l'adresse correcte de votre cluster Kafka
+topic_name = 'crypto'
+
+# Initialiser le consommateur Kafka
+consumer = KafkaConsumer(
+    topic_name,
+    bootstrap_servers=bootstrap_servers,
+     group_id='unique_crypto_group_id',
+    client_id='unique_client_id',
+    auto_offset_reset='earliest',
+    enable_auto_commit=False,
+    value_deserializer=lambda x: x.decode('utf-8')
+)
+
+# Lire et traiter les messages du topic Kafka
+for message in consumer:
+    print(f"Message reçu: {message}")
+    
+    try:
+        crypto_data = json.loads(message.value)
+        print(f"Nom: {crypto_data['crypto_name']}, Prix: {crypto_data['price']}")
+    except json.decoder.JSONDecodeError as e:
+        print(f"Erreur de décodage JSON: {e}")
